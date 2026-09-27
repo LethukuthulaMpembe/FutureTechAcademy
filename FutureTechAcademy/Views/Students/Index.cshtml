@@ -1,0 +1,334 @@
+﻿@model IEnumerable<FutureTechAcademy.Models.Student>
+
+@{
+    ViewData["Title"] = "Management Dashboard";
+
+    // Calculate KPIs
+    var totalRecords = Model.Count();
+    var activeCount = Model.Count(s => s.EnrolmentStatus == "Active");
+    var inactiveCount = Model.Count(s => s.EnrolmentStatus != "Active");
+}
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --bg-color: #020617;
+        --card-bg: #0f172a;
+        --accent-purple: #8b5cf6;
+        --accent-cyan: #22d3ee;
+        --text-high: #ffffff;
+        --text-dim: #94a3b8;
+        --border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-high);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* --- INTERACTIVE KPI CARDS --- */
+    .kpi-card {
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        background: var(--card-bg);
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        cursor: pointer;
+        padding: 25px;
+        position: relative;
+    }
+
+        .kpi-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 10px 30px rgba(34, 211, 238, 0.15);
+        }
+
+        .kpi-card::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--accent-cyan);
+            transition: 0.4s;
+        }
+
+        .kpi-card:hover::after {
+            width: 100%;
+        }
+
+    .kpi-label {
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 2px;
+        color: var(--accent-cyan);
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .kpi-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #ffffff;
+        font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* --- PROVISION BUTTON --- */
+    .btn-provision {
+        background: linear-gradient(135deg, var(--accent-purple), #6d28d9);
+        color: white !important;
+        border: none;
+        padding: 14px 30px;
+        border-radius: 12px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        transition: all 0.3s;
+        box-shadow: 0 8px 15px rgba(139, 92, 246, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+    }
+
+        .btn-provision:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(139, 92, 246, 0.5);
+            filter: brightness(1.1);
+        }
+
+    /* --- EXECUTE BAR --- */
+    .execute-container {
+        background: var(--card-bg);
+        padding: 8px;
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        display: flex;
+        gap: 8px;
+    }
+
+    .execute-input {
+        background: transparent !important;
+        border: none !important;
+        color: #ffffff !important; /* TEXT VISIBILITY FIXED */
+        font-weight: 600;
+        padding: 12px 20px;
+        font-size: 1rem;
+        flex-grow: 1;
+    }
+
+        .execute-input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+    .btn-execute {
+        background: var(--accent-cyan);
+        color: #000;
+        font-weight: 800;
+        padding: 0 35px;
+        border-radius: 10px;
+        border: none;
+        transition: 0.3s;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+        .btn-execute:hover {
+            background: #ffffff;
+        }
+
+    /* --- TABLE (STATIC - NO HOVER EFFECTS) --- */
+    .table-container {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        overflow: hidden;
+        margin-top: 30px;
+    }
+
+    .table {
+        background: transparent !important;
+        color: var(--text-high) !important;
+        margin-bottom: 0;
+    }
+
+        /* Static headers */
+        .table thead th {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--accent-cyan);
+            padding: 20px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        /* Static rows - No hover effects */
+        .table tbody td {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+            color: #ffffff !important;
+            background: transparent !important;
+        }
+
+    /* Action Icons */
+    .btn-action-icon {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--border-color);
+        color: white;
+        width: 40px;
+        height: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: 0.2s;
+    }
+
+        .btn-action-icon:hover {
+            background: var(--accent-cyan);
+            color: black;
+        }
+
+    .btn-delete-icon:hover {
+        background: #ef4444;
+        color: white;
+    }
+
+    .student-name-main {
+        font-weight: 700;
+        font-size: 1.05rem;
+        display: block;
+    }
+
+    .student-sub {
+        font-size: 0.85rem;
+        color: var(--text-dim);
+    }
+</style>
+
+<div class="container py-5">
+
+    <!-- Title Section -->
+    <div class="row align-items-center mb-5">
+        <div class="col-md-6">
+            <h1 class="fw-800 mb-0" style="letter-spacing: -2px; font-size: 2.8rem;">
+                Student <span class="text-info">Interface.</span>
+            </h1>
+            <p class="text-dim mt-2">// System Node: 0x4829 - Azure Core Ready</p>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <a asp-action="Create" class="btn-provision">
+                <i class="bi bi-plus-circle-fill"></i> Provision New Student
+            </a>
+        </div>
+    </div>
+
+    <!-- Interactive KPIs -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="kpi-card">
+                <span class="kpi-label">System Total</span>
+                <div class="kpi-value">@totalRecords</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="kpi-card">
+                <span class="kpi-label">Active Nodes</span>
+                <div class="kpi-value" style="color: var(--accent-cyan);">@activeCount</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="kpi-card">
+                <span class="kpi-label">Offline / Hold</span>
+                <div class="kpi-value" style="color: #f43f5e;">@inactiveCount</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Execute Bar -->
+    <div class="mb-5">
+        <form asp-action="Index" method="get" class="execute-container shadow-lg">
+            <input type="text" name="searchString" class="form-control execute-input shadow-none"
+                   placeholder="FILTER BY ATTRIBUTES (NAME, SURNAME, ID)..."
+                   value="@Context.Request.Query["searchString"]" />
+            <button type="submit" class="btn btn-execute">EXECUTE</button>
+        </form>
+    </div>
+
+    <!-- Table -->
+    <div class="table-container shadow-lg">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Identity Card</th>
+                        <th>Student Personnel</th>
+                        <th>Contact Channel</th>
+                        <th>Deployment</th>
+                        <th class="text-end">Command</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    @if (!string.IsNullOrEmpty(item.ProfileImageUrl))
+                                    {
+                                        <img src="@item.ProfileImageUrl" width="45" height="45" style="border-radius: 8px; border: 1px solid var(--border-color); object-fit: cover;" />
+                                    }
+                                    else
+                                    {
+                                        <div style="width: 45px; height: 45px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); border-radius: 8px; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                                            @item.FirstName[0]@item.LastName[0]
+                                        </div>
+                                    }
+                                    <div style="font-family: 'JetBrains Mono'; font-size: 0.75rem; color: var(--accent-cyan);">
+                                        ID: @item.Id.ToString().ToUpper().Substring(0, 8)
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="student-name-main text-white">@item.FirstName @item.LastName</span>
+                            </td>
+                            <td>
+                                <span class="student-name-main" style="font-size: 0.9rem;">@item.Email</span>
+                                <span class="student-sub">@item.MobileNumber</span>
+                            </td>
+                            <td>
+                                @if (item.EnrolmentStatus == "Active")
+                                {
+                                    <span class="badge bg-info text-dark fw-bold px-3 py-1">ACTIVE</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger text-white fw-bold px-3 py-1">INACTIVE</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn-action-icon" title="Modify Record">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn-action-icon btn-delete-icon"
+                                       onclick="return confirm('SYSTEM WARNING: Permanently delete student node?')" title="Delete Record">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

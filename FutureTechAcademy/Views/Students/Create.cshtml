@@ -1,0 +1,291 @@
+﻿@model FutureTechAcademy.Models.Student
+
+@{
+    ViewData["Title"] = "Provision New Student";
+}
+
+<!-- Google Fonts & Reference Styles -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --bg-color: #020617;
+        --card-bg: #0f172a;
+        --accent-purple: #8b5cf6;
+        --accent-cyan: #22d3ee;
+        --text-high: #ffffff;
+        --text-dim: #94a3b8;
+        --border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-high);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* --- PROVISIONING CARD --- */
+    .provision-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 28px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .provision-header {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 25px 40px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    /* --- UPLOAD BOX COMPONENTS (Referencing ImageDescribe) --- */
+    .dropzone {
+        border: 2px dashed rgba(34, 211, 238, 0.3);
+        border-radius: 20px;
+        padding: 2.5rem 1rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.02);
+        margin-bottom: 1.5rem;
+    }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--accent-cyan);
+            background: rgba(34, 211, 238, 0.05);
+        }
+
+    .preview-container {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 16px;
+        border: 1px solid var(--border-color);
+        height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+
+    .preview-img {
+        max-height: 100%;
+        max-width: 100%;
+        object-fit: cover;
+    }
+
+    .file-info-box {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        padding: 15px;
+        border: 1px solid var(--border-color);
+        font-size: 0.8rem;
+    }
+
+    /* --- FORM CONTROLS --- */
+    .form-label {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--accent-cyan);
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .cyber-input {
+        background: rgba(0, 0, 0, 0.2) !important;
+        border: 1px solid var(--border-color) !important;
+        color: white !important;
+        border-radius: 10px !important;
+        padding: 10px 15px !important;
+    }
+
+        .cyber-input:focus {
+            border-color: var(--accent-cyan) !important;
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.1) !important;
+        }
+
+    /* --- ACTIONS --- */
+    .btn-execute {
+        background: var(--accent-cyan);
+        color: #000 !important;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-radius: 10px;
+        padding: 14px 40px;
+        border: none;
+        transition: 0.3s;
+    }
+
+        .btn-execute:hover {
+            background: #ffffff;
+            transform: translateY(-2px);
+        }
+
+    .status-indicator {
+        font-size: 0.75rem;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+    }
+</style>
+
+<div class="container py-5">
+
+    <div class="mb-4">
+        <a asp-action="Index" class="text-dim text-decoration-none small fw-bold">
+            <i class="bi bi-chevron-left"></i> BACK TO REGISTRY
+        </a>
+    </div>
+
+    <div class="provision-card">
+        <div class="provision-header">
+            <h4 class="mb-0 fw-800"><i class="bi bi-cpu me-2 text-info"></i> PERSONNEL PROVISIONING</h4>
+            <p class="text-dim small mb-0 mt-1">// Azure Cosmos DB Node Registration: Active</p>
+        </div>
+
+        <div class="card-body p-4 p-lg-5">
+            <form asp-action="Create" method="post" enctype="multipart/form-data" id="provisionForm">
+                @Html.AntiForgeryToken()
+
+                <div class="row g-5">
+                    <!-- LEFT COLUMN: STUDENT DATA -->
+                    <div class="col-lg-7">
+                        <div asp-validation-summary="ModelOnly" class="text-danger small fw-bold mb-4"></div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="FirstName" class="form-label">First Name</label>
+                                <input asp-for="FirstName" class="form-control cyber-input" placeholder="e.g. John" />
+                                <span asp-validation-for="FirstName" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="LastName" class="form-label">Last Name</label>
+                                <input asp-for="LastName" class="form-control cyber-input" placeholder="e.g. Doe" />
+                                <span asp-validation-for="LastName" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Email" class="form-label">System Communication (Email)</label>
+                            <input asp-for="Email" type="email" class="form-control cyber-input" placeholder="john.doe@futuretech.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="MobileNumber" class="form-label">Contact Node (Mobile)</label>
+                                <input asp-for="MobileNumber" class="form-control cyber-input" placeholder="+27..." />
+                                <span asp-validation-for="MobileNumber" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="EnrolmentStatus" class="form-label">Deployment Status</label>
+                                <select asp-for="EnrolmentStatus" class="form-select cyber-input">
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 d-flex align-items-center gap-4">
+                            <button type="submit" class="btn-execute shadow-lg">
+                                EXECUTE PROVISIONING
+                            </button>
+                            <div id="statusText" class="status-indicator text-dim">SYSTEM_IDLE</div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: MEDIA ASSET (IMAGE UPLOAD BOX) -->
+                    <div class="col-lg-5">
+                        <label class="form-label">Profile Media Asset (Azure Blob)</label>
+
+                        <div id="dropzone" class="dropzone">
+                            <input type="file" name="profilePicture" id="fileInput" accept="image/*" style="display:none" />
+                            <i class="bi bi-cloud-upload fs-2 text-info mb-2 d-block"></i>
+                            <div class="fw-bold small text-white">Drop Asset here or <span class="text-info">Browse</span></div>
+                            <div class="text-dim mt-1" style="font-size: 0.7rem;">PNG, JPG up to 4MB</div>
+                        </div>
+
+                        <div class="preview-container">
+                            <img id="previewImg" class="preview-img d-none" alt="Preview" />
+                            <div id="placeholder" class="text-center opacity-25">
+                                <i class="bi bi-image fs-1 d-block mb-2"></i>
+                                <div class="small fw-bold">NO ASSET LOADED</div>
+                            </div>
+                        </div>
+
+                        <div class="file-info-box">
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="text-dim small text-uppercase fw-bold" style="font-size: 0.6rem;">File Size</div>
+                                    <div id="fileSize" class="fw-bold">—</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-dim small text-uppercase fw-bold" style="font-size: 0.6rem;">Extension</div>
+                                    <div id="fileType" class="fw-bold text-info">—</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        const previewImg = document.getElementById('previewImg');
+        const placeholder = document.getElementById('placeholder');
+        const fileSizeEl = document.getElementById('fileSize');
+        const fileTypeEl = document.getElementById('fileType');
+        const statusText = document.getElementById('statusText');
+
+        dropzone.addEventListener('click', () => fileInput.click());
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Update Metadata
+                fileSizeEl.textContent = (file.size / 1024).toFixed(1) + ' KB';
+                fileTypeEl.textContent = file.type.split('/')[1].toUpperCase();
+                statusText.textContent = 'ASSET_READY_FOR_HANDSHAKE';
+                statusText.className = 'status-indicator text-info';
+
+                // Update Preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    previewImg.src = e.target.result;
+                    previewImg.classList.remove('d-none');
+                    placeholder.classList.add('d-none');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Drag and Drop Logic
+        ['dragover', 'dragleave', 'drop'].forEach(evt => {
+            dropzone.addEventListener(evt, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        dropzone.addEventListener('dragover', () => dropzone.classList.add('dragover'));
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', (e) => {
+            dropzone.classList.remove('dragover');
+            fileInput.files = e.dataTransfer.files;
+            fileInput.dispatchEvent(new Event('change'));
+        });
+    </script>
+}
